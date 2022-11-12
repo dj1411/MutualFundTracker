@@ -12,8 +12,8 @@ from googleapiclient.errors import HttpError
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
 
 # The ID and range of a sample spreadsheet.
-SAMPLE_SPREADSHEET_ID = '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms'
-SAMPLE_RANGE_NAME = 'Class Data!A2:E'
+SAMPLE_SPREADSHEET_ID = '1_7C13GXFobv3oziyKh2Go4M3KehYjUl5lWSnzf2Xj74'
+SAMPLE_RANGE_NAME = 'Summary!B4:B24'
 
 
 def main():
@@ -50,11 +50,9 @@ def main():
         if not values:
             print('No data found.')
             return
+        
+        print(values)
 
-        print('Name, Major:')
-        for row in values:
-            # Print columns A and E, which correspond to indices 0 and 4.
-            print('%s, %s' % (row[0], row[4]))
     except HttpError as err:
         print(err)
 
