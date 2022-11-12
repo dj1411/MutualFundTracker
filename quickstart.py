@@ -52,6 +52,22 @@ def main():
             return
         
         print(values)
+        
+        body = {
+            'requests': [
+            {
+            'updateSpreadsheetProperties': {
+                'properties': {
+                    'title': "New Title"
+                },
+                'fields': 'title'
+            }            
+            ]
+        }
+        response = service.spreadsheets().batchUpdate(
+            spreadsheetId=SAMPLE_SPREADSHEET_ID,
+            body=body).execute()
+        print(response)
 
     except HttpError as err:
         print(err)
