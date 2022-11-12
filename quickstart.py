@@ -51,7 +51,7 @@ def main():
             print('No data found.')
             return
         
-        print(values)
+        # print(values)
         
         body = {
             'requests': [
@@ -61,6 +61,7 @@ def main():
                     'title': "New Title"
                 },
                 'fields': 'title'
+                }
             }            
             ]
         }
