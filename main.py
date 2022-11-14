@@ -55,25 +55,21 @@ def gsheet_init():
     return creds
 
 
-def gsheet_read_fundnames(creds):
+def gsheet_read_fundlist(creds):
     service = build('sheets', 'v4', credentials=creds)
     sheet = service.spreadsheets()
     result = sheet.values().get(spreadsheetId=config['DEFAULT']['GSHEET_ID'],
-                                range="self!A4:A31").execute()
+                                range=f"self!A4:A{MAXROWS}").execute()
     values = result.get('values', [])
-
-    if not values:
-        print('No data found.')
-        return
-
-    print(values)
+    myassert(values, 'No data found.')
+    return values
 
 
 def main():
     read_kuvera()
     start_time = datetime.datetime.now()
     creds = gsheet_init()
-    gsheet_read_fundnames(creds)
+    fund_list = gsheet_read_fundlist(creds)
     end_time = datetime.datetime.now()
     td = end_time - start_time
     myprint("Script finished in %f seconds" % td.total_seconds())
