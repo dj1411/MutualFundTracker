@@ -9,11 +9,11 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
 # If modifying these scopes, delete the file token.json.
-SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
+SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
 # The ID and range of a sample spreadsheet.
-SAMPLE_SPREADSHEET_ID = '1_7C13GXFobv3oziyKh2Go4M3KehYjUl5lWSnzf2Xj74'
-SAMPLE_RANGE_NAME = 'Summary!B4:B24'
+SAMPLE_SPREADSHEET_ID = '1X-ExD7JWsd6opg1A43sSnf3cINF7yrXZI28alLxRXxM'
+SAMPLE_RANGE_NAME = 'B4:B10'
 
 
 def main():
