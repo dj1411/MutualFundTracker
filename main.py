@@ -1,10 +1,7 @@
 # Import google apis
-from __future__ import print_function
-from google.auth.transport.requests import Request
-from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import InstalledAppFlow
-from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
+
 
 # import standard packages
 import pandas
@@ -21,9 +18,7 @@ df_kuvera = None
 config = configparser.ConfigParser()
 configfile = os.path.join(os.path.dirname(__file__), "config.ini")
 config.read(configfile)
-MAXROWS = 50
-MAXCOLS = 100
-
+ws = None
 
 def read_kuvera():
     global df_kuvera
@@ -34,42 +29,46 @@ def read_kuvera():
 
 
 def gsheet_init():
-    # The file token.json stores the user's access and refresh tokens, and is
-    # created automatically when the authorization flow completes for the first
-    # time.
-    creds = None
-    SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
-    if os.path.exists('token.json'):
-        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
-    # If there are no (valid) credentials available, let the user log in.
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
+    global ws
+    gc = gspread.oauth()
+    sheet = gc.open_by_key(config['DEFAULT']['GSHEET_ID'])
+    for id, sh in enumerate(sheet.worksheets(), start=0):
+        print(id, sh)
+    sh_id = int(input("Select sheet to use: "))
+    ws = sheet.get_worksheet(sh_id)
+
+
+def gsheet_read_fundlist():
+    return ws.col_values(1)
+
+
+def create_value_list(fundlist):
+    value_list = []
+    col = df_kuvera.columns.get_loc('Current Value')
+    for fund in fundlist:
+        select = df_kuvera['Scheme Name'] == fund
+        if df_kuvera[select].size > 0:
+            arr = [int(df_kuvera[select].iat[0, col])]
         else:
-            flow = InstalledAppFlow.from_client_secrets_file(
-                'credentials.json', SCOPES)
-            creds = flow.run_local_server(port=0)
-        # Save the credentials for the next run
-        with open('token.json', 'w') as token:
-            token.write(creds.to_json())
-    return creds
+            arr = ['']
+        value_list.append(arr)
+    return value_list
 
 
-def gsheet_read_fundlist(creds):
-    service = build('sheets', 'v4', credentials=creds)
-    sheet = service.spreadsheets()
-    result = sheet.values().get(spreadsheetId=config['DEFAULT']['GSHEET_ID'],
-                                range=f"self!A4:A{MAXROWS}").execute()
-    values = result.get('values', [])
-    myassert(values, 'No data found.')
-    return values
+def gsheet_write_values(value_list):
+    value_list.pop(0)
+    value_list.pop(0)
+    value_list.pop(0)
+    ws.update('F4:F50', value_list)
 
 
 def main():
     read_kuvera()
     start_time = datetime.datetime.now()
-    creds = gsheet_init()
-    fund_list = gsheet_read_fundlist(creds)
+    gsheet_init()
+    fundlist = gsheet_read_fundlist()
+    value_list = create_value_list(fundlist)
+    gsheet_write_values(value_list)
     end_time = datetime.datetime.now()
     td = end_time - start_time
     myprint("Script finished in %f seconds" % td.total_seconds())
