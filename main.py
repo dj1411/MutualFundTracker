@@ -77,5 +77,7 @@ def main():
 if __name__ == "__main__":
     try:
         main()
+    except (SystemExit, KeyboardInterrupt) as e :
+        pass
     except:
         myassert(False, "An exception has occurred.", True)
