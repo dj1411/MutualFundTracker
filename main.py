@@ -15,6 +15,7 @@ config.read(configfile)
 def main():
     start_time = datetime.datetime.now()
     db = Db()
+    db.calculate_profit()
     end_time = datetime.datetime.now()
     td = end_time - start_time
     print("Script finished in %f seconds" % td.total_seconds())

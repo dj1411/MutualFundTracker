@@ -19,13 +19,13 @@ class GSheet:
         self.sheet = gc.open_by_key(sheetid)
 
     def read(self):
-        ws = self.sheet.worksheet('principle')
-        df_principle = pd.DataFrame(ws.get_all_records())
+        ws = self.sheet.worksheet('investment')
+        df_investment = pd.DataFrame(ws.get_all_records())
 
         ws = self.sheet.worksheet('nav')
         df_nav = pd.DataFrame(ws.get_all_records())
 
-        return (df_principle, df_nav)
+        return (df_investment, df_nav)
 
     def write(self, tab, df):
         global lock
