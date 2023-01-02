@@ -23,14 +23,13 @@ class Db:
 
     def calculate_profit(self):
         # calculate principle
-        for label, data in self.df_investment.iterrows():
-            principle = self.df_investment.loc[label]['principle']
-            list_principle = []
+        list_principle = []
+        for row, data in self.df_investment.iterrows():
+            principle = self.df_investment.loc[row]['principle']
             for month in list_month:
-                inv = self.df_investment.loc[label][month]
+                inv = self.df_investment.loc[row][month]
                 if not isinstance(inv, str):
                     principle += inv
                     list_principle.append(principle)
                 else:
                     break
-            print(list_principle)
