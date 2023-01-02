@@ -14,8 +14,10 @@ config.read(configfile)
 
 def main():
     start_time = datetime.datetime.now()
+
     db = Db()
-    db.calculate_profit()
+    db.calculate_principle()
+
     end_time = datetime.datetime.now()
     td = end_time - start_time
     print("Script finished in %f seconds" % td.total_seconds())
@@ -24,7 +26,7 @@ def main():
 if __name__ == "__main__":
     try:
         main()
-    except (SystemExit, KeyboardInterrupt) as e :
+    except (SystemExit, KeyboardInterrupt) as e:
         pass
     except:
         assert False, "An exception has occurred."
