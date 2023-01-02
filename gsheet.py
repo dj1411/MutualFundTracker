@@ -9,19 +9,16 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
 # globals
-config = configparser.ConfigParser()
-configfile = os.path.join(os.path.dirname(__file__), "config.ini")
-config.read(configfile)
 lock = threading.Lock()
 
 
 class GSheet:
-    def __init__(self) -> None:
+    def __init__(self, sheetid) -> None:
         gc = gspread.oauth(credentials_filename='credentials.json',
                            authorized_user_filename='token.json')
-        self.sheet = gc.open_by_key(config['DEFAULT']['GSHEET_ID'])
+        self.sheet = gc.open_by_key(sheetid)
 
-    def gspread_read(self):
+    def read(self):
         ws = self.sheet.worksheet('principle')
         df_principle = pd.DataFrame(ws.get_all_records())
 
@@ -30,7 +27,7 @@ class GSheet:
 
         return (df_principle, df_nav)
 
-    def gspread_write(self, tab, df):
+    def write(self, tab, df):
         global lock
         lock.acquire()
         ws = self.sheet.worksheet(tab)

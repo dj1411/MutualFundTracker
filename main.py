@@ -4,6 +4,7 @@ import configparser
 import datetime
 
 # import custom packages
+from db import Db
 
 # globals
 config = configparser.ConfigParser()
@@ -13,6 +14,7 @@ config.read(configfile)
 
 def main():
     start_time = datetime.datetime.now()
+    db = Db()
     end_time = datetime.datetime.now()
     td = end_time - start_time
     print("Script finished in %f seconds" % td.total_seconds())
