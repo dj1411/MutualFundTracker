@@ -24,31 +24,25 @@ class Db:
         self.gsheet = GSheet(config['DEFAULT']['GSHEET_ID'])
         (self.df_investment, self.df_nav) = self.gsheet.read()
 
-        # reset index
-        self.df_investment.set_index("owner_fund_principle", inplace=True)
-        self.df_nav.set_index("owner_fund_principle", inplace=True)
-
         # treat data as numeric
         for col_label in list_month:
-            self.df_investment[col_label] = pd.to_numeric(
-                self.df_investment[col_label])
-            self.df_nav[col_label] = pd.to_numeric(self.df_nav[col_label])
+            if col_label in list_month:
+                self.df_investment[col_label] = pd.to_numeric(
+                    self.df_investment[col_label])
+                self.df_nav[col_label] = pd.to_numeric(self.df_nav[col_label])
 
     def calculate_principle(self):
-        list_columns = ['owner_fund_principle']
-        list_columns = list_columns.extend(list_month)
+        list_columns = ['owner', 'fund']
+        list_columns.extend(list_month)
         self.df_principle = pd.DataFrame(columns=list_columns)
-        for label, data in self.df_investment.iterrows():
-            row, _ = self.df_principle.shape
-            self.df_principle.at[len(self.df_principle),
-                                 'owner_fund_principle'] = label
-            principle = int(label.split('_')[2])
+        for row_label, data in self.df_investment.iterrows():
+            list_principle = [data['owner'], data['fund']]
+            principle = self.df_investment.loc[row_label]['principle']
             for month in list_month:
-                inv = self.df_investment.loc[label][month]
-                principle += inv
-                self.df_principle.at[row, month] = principle
+                principle += data[month]
+                list_principle.append(principle)
+            self.df_principle.loc[row_label] = list_principle
 
-        self.df_principle.set_index('owner_fund_principle', inplace=True)
 
     def calculate_profit(self):
         self.df_profit = self.df_nav - self.df_principle
