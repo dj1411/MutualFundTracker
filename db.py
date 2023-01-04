@@ -65,9 +65,10 @@ class Db:
         self.gsheet.write('percent', self.df_percent)
 
     def calculate_overall(self):
+        # init
         df_overall = pd.DataFrame()
         df_overall = pd.concat(
-            [self.df_investment['owner'], self.df_investment['fund']], axis=1)
+            [self.df_investment['owner'], self.df_investment['fund'], self.df_investment['risk']], axis=1)
 
         # principle column
         _, ncols = self.df_principle.shape
@@ -80,4 +81,10 @@ class Db:
             list_profit.append(data.drop(['owner', 'fund']).sum())
         df_overall['profit'] = list_profit
 
-        print(df_overall)
+        # profit percent
+        df_percent = round(df_overall['profit'] / df_overall['principle'], 3)
+        df_percent.rename('percent', inplace=True)
+        df_overall = pd.concat([df_overall, df_percent], axis=1)
+
+        # write to gsheet
+        self.gsheet.write('overall', df_overall)
