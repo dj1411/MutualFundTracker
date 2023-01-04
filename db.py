@@ -45,13 +45,21 @@ class Db:
 
 
     def calculate_profit(self):
-        self.df_profit = self.df_nav - self.df_principle
-        _df_profit = self.df_profit.reset_index(
-            names='owner_fund_principle').fillna(0)
-        self.gsheet.write('profit', _df_profit)
+        self.df_profit = pd.DataFrame()
+        self.df_profit['owner'] = self.df_investment['owner']
+        self.df_profit['fund'] = self.df_investment['fund']
+        _df_profit = self.df_nav.drop(
+            ['owner', 'fund'], axis=1) - self.df_principle.drop(['owner', 'fund'], axis=1)
+        self.df_profit = pd.concat(
+            [self.df_profit, _df_profit], axis=1).fillna(0)
+        self.gsheet.write('profit', self.df_profit)
 
     def calculate_percent(self):
-        df_percent = self.df_profit / self.df_principle
-        df_percent = df_percent.reset_index(
-            names='owner_fund_principle').fillna(0)
-        self.gsheet.write('percent', df_percent)
+        self.df_percent = pd.DataFrame()
+        self.df_percent['owner'] = self.df_investment['owner']
+        self.df_percent['fund'] = self.df_investment['fund']
+        _df_percent = self.df_profit.drop(
+            ['owner', 'fund'], axis=1) / self.df_principle.drop(['owner', 'fund'], axis=1)
+        self.df_percent = pd.concat(
+            [self.df_percent, _df_percent], axis=1).fillna(0)
+        self.gsheet.write('percent', self.df_percent)
