@@ -19,6 +19,7 @@ def main():
     db.calculate_principle()
     db.calculate_profit()
     db.calculate_percent()
+    db.calculate_overall()
 
     end_time = datetime.datetime.now()
     td = end_time - start_time
